@@ -1,7 +1,7 @@
 mod board;
 
 pub use board::Square;
-use board::{ActiveBoard, Board, FinalBoard, Player, Square::*};
+use board::{ActiveBoard, FinalBoard, Player, Square::*};
 use std::fmt;
 use State::{Tie, Win};
 
@@ -20,7 +20,7 @@ pub enum Game {
 impl Game {
     pub fn new() -> Game {
         Game::Active(ActiveGame {
-            board: Board::new(),
+            board: board::new(),
         })
     }
 
