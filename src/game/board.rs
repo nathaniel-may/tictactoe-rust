@@ -91,6 +91,25 @@ impl Board {
             Board::Active(b) => &b.m,
         }
     }
+
+    fn display_string(m: &HashMap<Square, Player>) -> String {
+        fn format_square(m: &HashMap<Square, Player>, sq: Square) -> String {
+            m.get(&sq).map_or(format!("<{}>", sq), |p| format!(" {} ", p))
+        }
+
+        format!(
+            "  {} | {} | {}\n  {} | {} | {}\n  {} | {} | {}",
+            format_square(m, I1),
+            format_square(m, I2),
+            format_square(m, I3),
+            format_square(m, I4),
+            format_square(m, I5),
+            format_square(m, I6),
+            format_square(m, I7),
+            format_square(m, I8),
+            format_square(m, I9)
+        )
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -125,25 +144,7 @@ impl ActiveBoard {
 
 impl fmt::Display for Board {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        fn format_square(b: &Board, sq: Square) -> String {
-            b.get_m()
-                .get(&sq)
-                .map_or(format!("<{}>", sq), |p| format!(" {} ", p))
-        }
-
-        write!(
-            f,
-            "  {} | {} | {}\n  {} | {} | {}\n  {} | {} | {}",
-            format_square(self, I1),
-            format_square(self, I2),
-            format_square(self, I3),
-            format_square(self, I4),
-            format_square(self, I5),
-            format_square(self, I6),
-            format_square(self, I7),
-            format_square(self, I8),
-            format_square(self, I9)
-        )
+        write!(f, "{}", Board::display_string(self.get_m()))
     }
 }
 
