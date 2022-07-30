@@ -26,13 +26,13 @@ impl fmt::Display for Square {
             I6 => "6",
             I7 => "7",
             I8 => "8",
-            I9 => "9"
+            I9 => "9",
         };
         write!(f, "{}", s.to_owned())
     }
 }
 
-#[derive(Clone, Copy, Eq, PartialEq, Debug)]
+#[derive(Clone, Copy, Eq, PartialEq, Debug, Hash)]
 pub enum Player {
     X,
     O,
@@ -48,14 +48,15 @@ impl fmt::Display for Player {
     }
 }
 
+#[derive(Clone, Debug)]
 pub enum Board {
     Final(FinalBoard),
     Active(ActiveBoard),
 }
 
 impl Board {
-    pub fn new() -> Board {
-        Board::Active(ActiveBoard { m: HashMap::new() })
+    pub fn new() -> ActiveBoard {
+        ActiveBoard { m: HashMap::new() }
     }
 
     pub fn get_m(&self) -> &HashMap<Square, Player> {
@@ -66,10 +67,12 @@ impl Board {
     }
 }
 
+#[derive(Clone, Debug)]
 pub struct FinalBoard {
     m: HashMap<Square, Player>,
 }
 
+#[derive(Clone, Debug)]
 pub struct ActiveBoard {
     m: HashMap<Square, Player>,
 }
@@ -80,9 +83,17 @@ impl ActiveBoard {
             None => {
                 self.m.insert(location, player);
                 Ok(())
-            },
+            }
             Some(_) => Err(format!("Location {} is already taken.", location)),
         }
+    }
+
+    pub fn piece_count(&self, player: Player) -> usize {
+        unimplemented! {}
+    }
+
+    pub fn get(&self, location: Square) -> Option<Player> {
+        self.m.get(&location).cloned()
     }
 }
 
@@ -119,5 +130,13 @@ impl From<FinalBoard> for Board {
 impl From<ActiveBoard> for Board {
     fn from(b: ActiveBoard) -> Board {
         Board::Active(b)
+    }
+}
+
+impl From<ActiveBoard> for FinalBoard {
+    fn from(b: ActiveBoard) -> FinalBoard {
+        FinalBoard {
+            m: b.m.clone()
+        }
     }
 }

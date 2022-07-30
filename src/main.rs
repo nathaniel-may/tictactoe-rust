@@ -7,12 +7,12 @@ use game::State::{Tie, Win};
 fn play_game(game: Game) {
     match game {
         Final(g) => {
-            let win_line = match g.state {
+            let title = match g.state {
                 Win(p) => format!(":: Player {} Wins! ::", p),
                 Tie => "::    Tie Game!    ::".to_owned(),
             };
-            println!("{}", win_line);
-            println!("{}", g.board);
+            println!("{}", title);
+            println!("{}", Game::from(g));
         }
         Active(g) => {
             unimplemented!();
