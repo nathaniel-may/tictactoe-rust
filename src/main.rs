@@ -6,14 +6,14 @@ use game::{
 };
 use std::io;
 
-
 // Main game loop
 fn play_game(game: Game) {
     // reading from stdin can fail
     fn get_input() -> Result<String, String> {
         let mut buffer = String::new();
         let stdin = io::stdin();
-        stdin.read_line(&mut buffer)
+        stdin
+            .read_line(&mut buffer)
             .or_else(|_| Err("System error reading input. Try again.".to_owned()))?;
         // remove the newline from entering the input
         buffer.pop();
