@@ -96,7 +96,7 @@ impl ActiveGame {
         for (x, y, z) in Game::WINNING_LINES {
             if x == location || y == location || z == location {
                 if [x, y, z].into_iter().all(|loc| self.board.get(loc) == Some(player)) {
-                    return Ok(Game::from(&FinalGame{state: Win(player), board: FinalBoard::from(&self.board)}))
+                    return Ok(Game::Final(FinalGame{state: Win(player), board: FinalBoard::from(&self.board)}))
                 }
             }
         }
@@ -105,21 +105,9 @@ impl ActiveGame {
         let xs = self.board.piece_count(Player::X);
         let os = self.board.piece_count(Player::O);
         if xs + os >= 9 {
-            return Ok(Game::from(&FinalGame{state: Tie, board: FinalBoard::from(&self.board)}))
+            return Ok(Game::Final(FinalGame{state: Tie, board: FinalBoard::from(&self.board)}))
         }
 
         Ok(Game::Active(self.clone())) // TODO clone
-    }
-}
-
-impl From<&FinalGame> for Game {
-    fn from(g: &FinalGame) -> Game {
-        Game::Final(g.clone())
-    }
-}
-
-impl From<&ActiveGame> for Game {
-    fn from(g: &ActiveGame) -> Game {
-        Game::Active(g.clone())
     }
 }

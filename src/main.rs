@@ -28,5 +28,5 @@ fn play_game(game: Game) {
 
 fn main() {
     println!("::  Tic Tac Toe  ::\n");
-    play_game(Game::from(Game::new()));
+    play_game(Game::new());
 }

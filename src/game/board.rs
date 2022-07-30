@@ -160,18 +160,6 @@ impl fmt::Display for Board {
     }
 }
 
-impl From<&FinalBoard> for Board {
-    fn from(b: &FinalBoard) -> Board {
-        Board::Final(b.clone())
-    }
-}
-
-impl From<&ActiveBoard> for Board {
-    fn from(b: &ActiveBoard) -> Board {
-        Board::Active(b.clone())
-    }
-}
-
 impl From<&ActiveBoard> for FinalBoard {
     fn from(b: &ActiveBoard) -> FinalBoard {
         FinalBoard {
