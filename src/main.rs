@@ -1,6 +1,9 @@
 mod game;
 
-use game::{Game::{self, Active, Final}, Square};
+use game::{
+    Game::{self, Active, Final},
+    Square,
+};
 use std::io;
 
 fn play_game(game: Game) {
@@ -11,10 +14,9 @@ fn play_game(game: Game) {
             let mut buffer = String::new();
             let stdin = io::stdin();
             stdin.read_line(&mut buffer).unwrap(); // TODO unwrap
-            // remove the newline from entering the input
+                                                   // remove the newline from entering the input
             buffer.pop();
-            let next = Square::try_from(buffer)
-                .and_then(|sq| g.take_turn(sq));
+            let next = Square::try_from(buffer).and_then(|sq| g.take_turn(sq));
             match next {
                 Ok(x) => play_game(x),
                 Err(e) => {

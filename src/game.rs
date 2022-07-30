@@ -1,15 +1,9 @@
 mod board;
 
-use board::{
-    ActiveBoard, Board, FinalBoard, Player,
-    Square::*,
-};
-use State::{
-    Tie,
-    Win
-};
-use std::fmt;
 pub use board::Square;
+use board::{ActiveBoard, Board, FinalBoard, Player, Square::*};
+use std::fmt;
+use State::{Tie, Win};
 
 #[derive(Clone, Copy, Eq, PartialEq, Debug, Hash)]
 pub enum State {
@@ -95,8 +89,14 @@ impl ActiveGame {
         // check for winner
         for (x, y, z) in Game::WINNING_LINES {
             if x == location || y == location || z == location {
-                if [x, y, z].into_iter().all(|loc| self.board.get(loc) == Some(player)) {
-                    return Ok(Game::Final(FinalGame{state: Win(player), board: FinalBoard::from(&self.board)}))
+                if [x, y, z]
+                    .into_iter()
+                    .all(|loc| self.board.get(loc) == Some(player))
+                {
+                    return Ok(Game::Final(FinalGame {
+                        state: Win(player),
+                        board: FinalBoard::from(&self.board),
+                    }));
                 }
             }
         }
@@ -105,10 +105,15 @@ impl ActiveGame {
         let xs = self.board.piece_count(Player::X);
         let os = self.board.piece_count(Player::O);
         if xs + os >= 9 {
-            return Ok(Game::Final(FinalGame{state: Tie, board: FinalBoard::from(&self.board)}))
+            return Ok(Game::Final(FinalGame {
+                state: Tie,
+                board: FinalBoard::from(&self.board),
+            }));
         }
 
-        // cloning self is the price we pay for the ironclad type safety we get by returning `Game`. We can't mutate self in place because the value of `self: &mut ActiveGame` can never represent a value of type `FinalGame`.
+        // cloning self is the price we pay for the ironclad type safety we get by returning `Game`.
+        // We can't mutate self in place because the value of `self: &mut ActiveGame` can never
+        // represent a value of type `FinalGame`.
         Ok(Game::Active(self.clone()))
     }
 }

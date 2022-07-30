@@ -45,12 +45,12 @@ impl TryFrom<String> for Square {
             ("6", I6),
             ("7", I7),
             ("8", I8),
-            ("9", I9)
+            ("9", I9),
         ];
 
         for (input, parsed) in pairs {
             if input == s {
-                return Ok(parsed)
+                return Ok(parsed);
             }
         }
 
@@ -94,7 +94,8 @@ impl Board {
 
     fn display_string(m: &HashMap<Square, Player>) -> String {
         fn format_square(m: &HashMap<Square, Player>, sq: Square) -> String {
-            m.get(&sq).map_or(format!("<{}>", sq), |p| format!(" {} ", p))
+            m.get(&sq)
+                .map_or(format!("<{}>", sq), |p| format!(" {} ", p))
         }
 
         format!(
@@ -162,8 +163,6 @@ impl fmt::Display for Board {
 
 impl From<&ActiveBoard> for FinalBoard {
     fn from(b: &ActiveBoard) -> FinalBoard {
-        FinalBoard {
-            m: b.m.clone()
-        }
+        FinalBoard { m: b.m.clone() }
     }
 }
