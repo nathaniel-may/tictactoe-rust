@@ -90,7 +90,7 @@ impl ActiveGame {
         for (x, y, z) in Game::WINNING_LINES {
             if x == location || y == location || z == location {
                 if [x, y, z]
-                    .into_iter()
+                    .into_iter() // TODO do this on the stack instead
                     .all(|loc| self.board.get(loc) == Some(player))
                 {
                     return Ok(Game::Final(FinalGame {
