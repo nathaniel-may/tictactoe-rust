@@ -15,6 +15,23 @@ pub enum Square {
     I9,
 }
 
+impl fmt::Display for Square {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let s = match self {
+            I1 => "1",
+            I2 => "2",
+            I3 => "3",
+            I4 => "4",
+            I5 => "5",
+            I6 => "6",
+            I7 => "7",
+            I8 => "8",
+            I9 => "9"
+        };
+        write!(f, "{}", s.to_owned())
+    }
+}
+
 #[derive(Clone, Copy, Eq, PartialEq, Debug)]
 pub enum Player {
     X,
@@ -25,7 +42,7 @@ impl fmt::Display for Player {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let s = match self {
             Player::X => "X",
-            Player::O => "O"
+            Player::O => "O",
         };
         write!(f, "{}", s.to_owned())
     }
@@ -44,29 +61,37 @@ impl Board {
     pub fn get_m(&self) -> &HashMap<Square, Player> {
         match self {
             Board::Final(b) => &b.m,
-            Board::Active(b) => &b.m
+            Board::Active(b) => &b.m,
         }
     }
 }
 
 pub struct FinalBoard {
-    m: HashMap<Square, Player>
+    m: HashMap<Square, Player>,
 }
 
 pub struct ActiveBoard {
-    m: HashMap<Square, Player>
+    m: HashMap<Square, Player>,
 }
 
 impl ActiveBoard {
-    fn place(&mut self, location: Square, player: Player) -> Board {
-        unimplemented!()
+    pub fn place(&mut self, location: Square, player: Player) -> Result<(), String> {
+        match self.m.get(&location) {
+            None => {
+                self.m.insert(location, player);
+                Ok(())
+            },
+            Some(_) => Err(format!("Location {} is already taken.", location)),
+        }
     }
 }
 
 impl fmt::Display for Board {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         fn format_square(b: &Board, sq: Square) -> String {
-            b.get_m().get(&sq).map_or(" ".to_owned(), |p| format!("{}", p))
+            b.get_m()
+                .get(&sq)
+                .map_or(" ".to_owned(), |p| format!("{}", p))
         }
 
         write!(
