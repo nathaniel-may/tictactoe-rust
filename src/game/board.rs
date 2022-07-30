@@ -89,7 +89,7 @@ impl ActiveBoard {
     }
 
     pub fn piece_count(&self, player: Player) -> usize {
-        unimplemented! {}
+        self.m.values().filter(|v| **v == player).count()
     }
 
     pub fn get(&self, location: Square) -> Option<Player> {
