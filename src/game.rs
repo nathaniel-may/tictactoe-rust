@@ -51,7 +51,7 @@ impl fmt::Display for Game {
             Game::Final(g) => {
                 let title = match g.state {
                     Win(p) => format!(":: Player {} Wins! ::", p),
-                    Tie => "::    Tie Game!    ::".to_owned(),
+                    Tie => "::    Tie Game!   ::".to_owned(),
                 };
                 format!("{}\n{}", title, Board::from(g.board.clone())) // TODO clone
             }

@@ -128,12 +128,12 @@ impl fmt::Display for Board {
         fn format_square(b: &Board, sq: Square) -> String {
             b.get_m()
                 .get(&sq)
-                .map_or(" ".to_owned(), |p| format!("{}", p))
+                .map_or(format!("<{}>", sq), |p| format!(" {} ", p))
         }
 
         write!(
             f,
-            "     {} | {} | {}\n     {} | {} | {}\n     {} | {} | {}",
+            "  {} | {} | {}\n  {} | {} | {}\n  {} | {} | {}",
             format_square(self, I1),
             format_square(self, I2),
             format_square(self, I3),
