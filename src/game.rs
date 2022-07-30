@@ -53,10 +53,10 @@ impl fmt::Display for Game {
                     Win(p) => format!(":: Player {} Wins! ::", p),
                     Tie => "::    Tie Game!   ::".to_owned(),
                 };
-                format!("{}\n{}", title, Board::from(&g.board))
+                format!("{}\n{}", title, &g.board)
             }
             Game::Active(g) => {
-                format!("::    {}'s Turn    ::\n{}", g.active_player(), Board::from(&g.board))
+                format!("::    {}'s Turn    ::\n{}", g.active_player(), &g.board)
             }
         };
         write!(f, "{}", s)

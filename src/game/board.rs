@@ -117,6 +117,12 @@ pub struct FinalBoard {
     m: HashMap<Square, Player>,
 }
 
+impl fmt::Display for FinalBoard {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", Board::display_string(&self.m))
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct ActiveBoard {
     m: HashMap<Square, Player>,
@@ -142,9 +148,15 @@ impl ActiveBoard {
     }
 }
 
+impl fmt::Display for ActiveBoard {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", Board::display_string(&self.m))
+    }
+}
+
 impl fmt::Display for Board {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", Board::display_string(self.get_m()))
+        write!(f, "{}", Board::display_string(&self.get_m()))
     }
 }
 
