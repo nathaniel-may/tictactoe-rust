@@ -2,13 +2,14 @@ mod board;
 
 use board::{
     ActiveBoard, Board, FinalBoard, Player,
-    Square::{self, *},
+    Square::*,
 };
 use State::{
     Tie,
     Win
 };
 use std::fmt;
+pub use board::Square;
 
 #[derive(Clone, Copy, Eq, PartialEq, Debug, Hash)]
 pub enum State {
@@ -84,12 +85,12 @@ impl ActiveGame {
         }
     }
 
-    fn take_turn(&mut self, location: Square) -> Result<Game, String> {
+    pub fn take_turn(&mut self, location: Square) -> Result<Game, String> {
         // determine whose turn it is
         let player = self.active_player();
 
         // place the piece (will return Err if occupied)
-        self.board.place(location, player);
+        self.board.place(location, player)?;
 
         // check for winner
         for (x, y, z) in Game::WINNING_LINES {

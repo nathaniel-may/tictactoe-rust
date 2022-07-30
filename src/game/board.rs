@@ -32,6 +32,32 @@ impl fmt::Display for Square {
     }
 }
 
+impl TryFrom<String> for Square {
+    type Error = String;
+
+    fn try_from(s: String) -> Result<Square, String> {
+        let pairs = [
+            ("1", I1),
+            ("2", I2),
+            ("3", I3),
+            ("4", I4),
+            ("5", I5),
+            ("6", I6),
+            ("7", I7),
+            ("8", I8),
+            ("9", I9)
+        ];
+
+        for (input, parsed) in pairs {
+            if input == s {
+                return Ok(parsed)
+            }
+        }
+
+        Err(format!("Squares are numbered 1-9. {} is invalid.", s))
+    }
+}
+
 #[derive(Clone, Copy, Eq, PartialEq, Debug, Hash)]
 pub enum Player {
     X,
@@ -107,7 +133,7 @@ impl fmt::Display for Board {
 
         write!(
             f,
-            "{}|{}|{}\n{}|{}|{}\n{}|{}|{}",
+            "     {} | {} | {}\n     {} | {} | {}\n     {} | {} | {}",
             format_square(self, I1),
             format_square(self, I2),
             format_square(self, I3),
