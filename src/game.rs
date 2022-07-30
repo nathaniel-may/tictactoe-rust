@@ -108,6 +108,7 @@ impl ActiveGame {
             return Ok(Game::Final(FinalGame{state: Tie, board: FinalBoard::from(&self.board)}))
         }
 
-        Ok(Game::Active(self.clone())) // TODO clone
+        // cloning self is the price we pay for the ironclad type safety we get by returning `Game`. We can't mutate self in place because the value of `self: &mut ActiveGame` can never represent a value of type `FinalGame`.
+        Ok(Game::Active(self.clone()))
     }
 }
