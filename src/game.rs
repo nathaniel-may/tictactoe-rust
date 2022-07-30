@@ -96,7 +96,7 @@ impl ActiveGame {
         for (x, y, z) in Game::WINNING_LINES {
             if x == location || y == location || z == location {
                 if [x, y, z].into_iter().all(|loc| self.board.get(loc) == Some(player)) {
-                    return Ok(Game::from(&FinalGame{state: Win(player), board: FinalBoard::from(&self.board)}))  // TODO clone
+                    return Ok(Game::from(&FinalGame{state: Win(player), board: FinalBoard::from(&self.board)}))
                 }
             }
         }
