@@ -1,9 +1,9 @@
-mod board;
+// these modules need to be public for lib.rs to re-export the library interface
+pub mod board;
 pub mod error;
 
-pub use board::Square;
-pub use error::*;
-use board::{ActiveBoard, FinalBoard, Player, Square::*};
+use error::*;
+use board::{ActiveBoard, FinalBoard, Player, Square, Square::*};
 use std::fmt;
 use State::{Tie, Win};
 

@@ -1,6 +1,6 @@
 mod game;
 
-use game::{
+use tictactoe::{
     Game::{self, Active, Final},
     ActiveGame,
     Square,
@@ -14,7 +14,7 @@ struct TicTacToeUserFacingError {
     e: TicTacToeError
 }
 
-// Explicitly takes control of the user interface from the underlying library.
+// explicitly takes control of the user interface from the underlying library.
 // If the library updates its Display instance for exceptions we don't want
 // the user interface to be silently modified.
 impl fmt::Display for TicTacToeUserFacingError {
