@@ -1,7 +1,6 @@
 use super::error::{SquareOccupied, StringIsNotASquare};
 use std::collections::HashMap;
 use std::fmt;
-
 use Square::*;
 
 #[derive(Clone, Copy, Eq, PartialEq, Debug, Hash)]
