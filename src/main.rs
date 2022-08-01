@@ -8,10 +8,15 @@ use game::{
 };
 use std::{fmt, io};
 
+// wrapper for errors so we can create our own trait instances for the library
+// error type.
 struct TicTacToeUserFacingError {
     e: TicTacToeError
 }
 
+// Explicitly takes control of the user interface from the underlying library.
+// If the library updates its Display instance for exceptions we don't want
+// the user interface to be silently modified.
 impl fmt::Display for TicTacToeUserFacingError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let s = match &self.e {
@@ -34,18 +39,24 @@ fn play_game(game: Game) {
         let stdin = io::stdin();
         stdin
             .read_line(&mut buffer)
-            .or_else(|_| Err(StdInFailure {}))?;
+            .or_else(|e| Err(StdInFailure { e: e}))?;
         // remove the newline from entering the input
         buffer.pop();
         Ok(buffer)
     }
 
     // attempt to take a turn with the user input
-    fn next(game: &mut ActiveGame) ->  Result<Game, TicTacToeError> {
-        let input = get_input()?;
-        let sq = Square::try_from(input)?;
-        let next = game.take_turn(sq)?;
-        Ok(next)
+    fn next(game: &mut ActiveGame) ->  Result<Game, TicTacToeUserFacingError> {
+        // Inner function makes calls to `?` utilize the correct `From` instances
+        fn _next(game: &mut ActiveGame) ->  Result<Game, TicTacToeError> {
+            let input = get_input()?;
+            let sq = Square::try_from(input)?;
+            let next = game.take_turn(sq)?;
+            Ok(next)
+        }
+
+        // explicitly convert the error to the user-facing variant
+        _next(game).map_err(|e| TicTacToeUserFacingError{e: e})
     }
 
     println!("{}", game);
@@ -57,7 +68,7 @@ fn play_game(game: Game) {
             Ok(x) => play_game(x),
             // if there was an error, show it to the user and try the turn again
             Err(e) => {
-                println!("{}", TicTacToeUserFacingError{ e: e });
+                println!("{}", e);
                 play_game(Game::Active(g));
             }
         }

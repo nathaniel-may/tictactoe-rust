@@ -6,3 +6,4 @@ As a mentor I assign small programming projects so my mentees can practice new c
 - add doc strings
 - add usage section to readme
 - clean up imports
+- use lib.rs & rename Game type.

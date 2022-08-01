@@ -1,13 +1,18 @@
+use self::TicTacToeError::*;
 use super::board::Square;
+use std::fmt;
 
+#[derive(Debug)]
 pub enum TicTacToeError {
     StdInFailure(StdInFailure),
     StringIsNotASquare(StringIsNotASquare),
     SquareOccupied(SquareOccupied)
 }
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub struct StdInFailure {}
+#[derive(Debug)]
+pub struct StdInFailure {
+    pub e: std::io::Error
+}
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct StringIsNotASquare {
@@ -19,33 +24,44 @@ pub struct SquareOccupied {
     pub sq: Square
 }
 
-// TODO impl this
-// impl std::error::Error for TicTacToeError {
-//     fn source(&self) -> Option<&(dyn error::Error + 'static)> {
-//         match *self {
-//             DoubleError::EmptyVec => None,
-//             // The cause is the underlying implementation error type. Is implicitly
-//             // cast to the trait object `&error::Error`. This works because the
-//             // underlying type already implements the `Error` trait.
-//             TicTacToeError::Parse(ref e) => Some(e),
-//         }
-//     }
-// }
+impl std::error::Error for TicTacToeError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match *self {
+            StdInFailure(StdInFailure{ref e}) => Some(e),
+            StringIsNotASquare(_) => None,
+            SquareOccupied(_) => None,
+        }
+    }
+}
+
+impl fmt::Display for TicTacToeError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let s = match &self {
+            StdInFailure(_) => 
+                "System error reading input".to_owned(),
+            StringIsNotASquare(StringIsNotASquare{string}) => 
+                format!("Squares are numbered 1-9. {} is invalid.", string.clone()),
+            SquareOccupied(SquareOccupied{sq}) => 
+                format!("Location {} is already taken.", sq),
+        };
+        write!(f, "{}", s)
+    }
+}
 
 impl From<StdInFailure> for TicTacToeError {
     fn from(e: StdInFailure) -> TicTacToeError {
-        TicTacToeError::StdInFailure(e)
+        StdInFailure(e)
     }
 }
 
 impl From<StringIsNotASquare> for TicTacToeError {
     fn from(e: StringIsNotASquare) -> TicTacToeError {
-        TicTacToeError::StringIsNotASquare(e.clone())
+        StringIsNotASquare(e)
     }
 }
 
 impl From<SquareOccupied> for TicTacToeError {
     fn from(e: SquareOccupied) -> TicTacToeError {
-        TicTacToeError::SquareOccupied(e)
+        SquareOccupied(e)
     }
 }
