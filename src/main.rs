@@ -1,5 +1,3 @@
-mod game;
-
 use tictactoe::{
     Game::{self, Active, Final},
     ActiveGame,
