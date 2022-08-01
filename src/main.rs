@@ -2,6 +2,7 @@ mod game;
 
 use game::{
     Game::{self, Active, Final},
+    ActiveGame,
     Square,
     error::{TicTacToeError, StdInFailure, StringIsNotASquare, SquareOccupied}
 };
@@ -25,7 +26,7 @@ impl fmt::Display for TicTacToeUserFacingError {
     }
 }
 
-// Main game loop
+// main game loop
 fn play_game(game: Game) {
     // reading from stdin can fail
     fn get_input() -> Result<String, StdInFailure> {
@@ -39,24 +40,25 @@ fn play_game(game: Game) {
         Ok(buffer)
     }
 
+    // attempt to take a turn with the user input
+    fn next(game: &mut ActiveGame) ->  Result<Game, TicTacToeError> {
+        let input = get_input()?;
+        let sq = Square::try_from(input)?;
+        let next = game.take_turn(sq)?;
+        Ok(next)
+    }
+
     println!("{}", game);
     match game {
-        // The game is over. Exit the program.
+        // the game is over. Exit the program.
         Final(_) => (),
-        // The game is still active. Keep playing
-        Active(mut g) => {
-            // Attempt to take a turn with the user input
-            let next = get_input().map_err(|e| TicTacToeError::from(&e))
-                .and_then(|input| Square::try_from(input).map_err(|e| TicTacToeError::from(&e)))
-                .and_then(|sq| g.take_turn(sq).map_err(|e| TicTacToeError::from(&e)));
-
-            // Continue playing or start this turn over if there was an error
-            match next {
-                Ok(x) => play_game(x),
-                Err(e) => {
-                    println!("{}", TicTacToeUserFacingError{ e: e });
-                    play_game(Game::Active(g));
-                }
+        // the game is still active. Keep playing
+        Active(mut g) => match next(&mut g) {
+            Ok(x) => play_game(x),
+            // if there was an error, show it to the user and try the turn again
+            Err(e) => {
+                println!("{}", TicTacToeUserFacingError{ e: e });
+                play_game(Game::Active(g));
             }
         }
     }
