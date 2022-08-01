@@ -6,28 +6,28 @@ use std::fmt;
 pub enum TicTacToeError {
     StdInFailure(StdInFailure),
     StringIsNotASquare(StringIsNotASquare),
-    SquareOccupied(SquareOccupied)
+    SquareOccupied(SquareOccupied),
 }
 
 #[derive(Debug)]
 pub struct StdInFailure {
-    pub e: std::io::Error
+    pub e: std::io::Error,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct StringIsNotASquare {
-    pub string: String
+    pub string: String,
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct SquareOccupied {
-    pub sq: Square
+    pub sq: Square,
 }
 
 impl std::error::Error for TicTacToeError {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         match *self {
-            StdInFailure(StdInFailure{ref e}) => Some(e),
+            StdInFailure(StdInFailure { ref e }) => Some(e),
             StringIsNotASquare(_) => None,
             SquareOccupied(_) => None,
         }
@@ -37,12 +37,11 @@ impl std::error::Error for TicTacToeError {
 impl fmt::Display for TicTacToeError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let s = match &self {
-            StdInFailure(_) => 
-                "System error reading input".to_owned(),
-            StringIsNotASquare(StringIsNotASquare{string}) => 
-                format!("Squares are numbered 1-9. {} is invalid.", string.clone()),
-            SquareOccupied(SquareOccupied{sq}) => 
-                format!("Location {} is already taken.", sq),
+            StdInFailure(_) => "System error reading input".to_owned(),
+            StringIsNotASquare(StringIsNotASquare { string }) => {
+                format!("Squares are numbered 1-9. {} is invalid.", string.clone())
+            }
+            SquareOccupied(SquareOccupied { sq }) => format!("Location {} is already taken.", sq),
         };
         write!(f, "{}", s)
     }

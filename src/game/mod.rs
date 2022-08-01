@@ -2,8 +2,8 @@
 pub mod board;
 pub mod error;
 
-use error::*;
 use board::{ActiveBoard, FinalBoard, Player, Square, Square::*};
+use error::*;
 use std::fmt;
 use State::{Tie, Win};
 

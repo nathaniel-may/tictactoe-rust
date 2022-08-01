@@ -1,6 +1,6 @@
+use super::error::{SquareOccupied, StringIsNotASquare};
 use std::collections::HashMap;
 use std::fmt;
-use super::error::{SquareOccupied, StringIsNotASquare};
 
 use Square::*;
 
@@ -56,7 +56,7 @@ impl TryFrom<String> for Square {
             }
         }
 
-        Err(StringIsNotASquare{string: s})
+        Err(StringIsNotASquare { string: s })
     }
 }
 
@@ -123,7 +123,7 @@ impl ActiveBoard {
                 self.m.insert(location, player);
                 Ok(())
             }
-            Some(_) => Err(SquareOccupied{ sq: location }),
+            Some(_) => Err(SquareOccupied { sq: location }),
         }
     }
 
