@@ -75,74 +75,62 @@ impl fmt::Display for Player {
     }
 }
 
-pub fn new() -> ActiveBoard {
-    ActiveBoard { m: HashMap::new() }
+pub fn new() -> Board {
+    Board { m: HashMap::new() }
 }
 
-fn display_string(m: &HashMap<Square, Player>) -> String {
-    fn format_square(m: &HashMap<Square, Player>, sq: Square) -> String {
-        m.get(&sq)
-            .map_or(format!("<{}>", sq), |p| format!(" {} ", p))
-    }
-
-    format!(
-        "  {} | {} | {}\n  {} | {} | {}\n  {} | {} | {}",
-        format_square(m, I1),
-        format_square(m, I2),
-        format_square(m, I3),
-        format_square(m, I4),
-        format_square(m, I5),
-        format_square(m, I6),
-        format_square(m, I7),
-        format_square(m, I8),
-        format_square(m, I9)
-    )
-}
-
+/// An immutable board type that can only ever have exactly 9 keys.
 #[derive(Clone, Debug)]
-pub struct FinalBoard {
+pub struct Board {
     m: HashMap<Square, Player>,
 }
 
-impl fmt::Display for FinalBoard {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", display_string(&self.m))
-    }
-}
-
-#[derive(Clone, Debug)]
-pub struct ActiveBoard {
-    m: HashMap<Square, Player>,
-}
-
-impl ActiveBoard {
-    pub fn place(&mut self, location: Square, player: Player) -> Result<(), SquareOccupied> {
-        match self.m.get(&location) {
+// Never add a function with `&mut self` here. The Game type relies on this being immutable.
+// i.e. - A value of type `FinalGame` shouldn't have its board changed even though i's public.
+impl Board {
+    /// places a the player piece on the square. returns an `ActiveBoard` if the board is not
+    /// full, and returns a `FinalBoard` if it is full.
+    pub fn place(&self, location: Square, player: Player) -> Result<Board, SquareOccupied> {
+        let mut next_m = self.m.clone();
+        match next_m.get(&location) {
             None => {
-                self.m.insert(location, player);
-                Ok(())
+                next_m.insert(location, player);
+                Ok(Board{m: next_m})
             }
             Some(_) => Err(SquareOccupied { sq: location }),
         }
     }
 
+    /// returns the number of squares occupied by the player
     pub fn piece_count(&self, player: Player) -> usize {
         self.m.values().filter(|v| **v == player).count()
     }
 
+    /// returns the value at that locationon the board: `Some(player)` or `None`.
     pub fn get(&self, location: Square) -> Option<Player> {
         self.m.get(&location).cloned()
     }
 }
 
-impl fmt::Display for ActiveBoard {
+impl fmt::Display for Board {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", display_string(&self.m))
-    }
-}
-
-impl From<&ActiveBoard> for FinalBoard {
-    fn from(b: &ActiveBoard) -> FinalBoard {
-        FinalBoard { m: b.m.clone() }
+        fn format_square(m: &HashMap<Square, Player>, sq: Square) -> String {
+            m.get(&sq)
+                .map_or(format!("<{}>", sq), |p| format!(" {} ", p))
+        }
+    
+        write!(
+            f,
+            "  {} | {} | {}\n  {} | {} | {}\n  {} | {} | {}",
+            format_square(&self.m, I1),
+            format_square(&self.m, I2),
+            format_square(&self.m, I3),
+            format_square(&self.m, I4),
+            format_square(&self.m, I5),
+            format_square(&self.m, I6),
+            format_square(&self.m, I7),
+            format_square(&self.m, I8),
+            format_square(&self.m, I9)
+        )
     }
 }

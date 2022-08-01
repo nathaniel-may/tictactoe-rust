@@ -2,7 +2,7 @@
 pub mod board;
 pub mod error;
 
-use board::{ActiveBoard, FinalBoard, Player, Square, Square::*};
+use board::{Board, Player, Square, Square::*};
 use error::*;
 use std::fmt;
 use State::{Tie, Win};
@@ -59,18 +59,24 @@ impl fmt::Display for Game {
     }
 }
 
+/// A `FinalGame` is completed and you cannot take any more turns on it.
+/// Because board has no mutating functions it is safe to expose it here.
 #[derive(Clone, Debug)]
 pub struct FinalGame {
     pub state: State,
-    pub board: FinalBoard,
+    pub board: Board,
 }
 
+/// An `ActiveGame` is not completed and you can continue to take more turns on it.
+/// Because board has no mutating functions it is safe to expose it here.
 #[derive(Clone, Debug)]
 pub struct ActiveGame {
-    pub board: ActiveBoard,
+    pub board: Board,
 }
 
 impl ActiveGame {
+    /// determines the active player from the number of pieces on the board.
+    /// reads the value of every square on the board.
     fn active_player(&self) -> Player {
         let xs = self.board.piece_count(Player::X);
         let os = self.board.piece_count(Player::O);
@@ -81,41 +87,42 @@ impl ActiveGame {
         }
     }
 
-    pub fn take_turn(&mut self, location: Square) -> Result<Game, SquareOccupied> {
+    /// takes a turn and returns a new value representing the next state of the game.
+    /// # Errors
+    /// `SquareOccupied` - if the square is already occupied by a piece.
+    pub fn take_turn(&self, location: Square) -> Result<Game, SquareOccupied> {
         // determine whose turn it is
         let player = self.active_player();
 
-        // place the piece (will return Err if occupied)
-        self.board.place(location, player)?;
+        // placing the piece (will return Err if occupied)
+        let next_board = self.board.place(location, player)?;
 
         // check for winner
         for (x, y, z) in Game::WINNING_LINES {
             if x == location || y == location || z == location {
                 if [x, y, z]
                     .into_iter() // TODO do this on the stack instead
-                    .all(|loc| self.board.get(loc) == Some(player))
+                    .all(|loc| next_board.get(loc) == Some(player))
                 {
                     return Ok(Game::Final(FinalGame {
                         state: Win(player),
-                        board: FinalBoard::from(&self.board),
+                        board: next_board,
                     }));
                 }
             }
         }
 
         // check for tie
-        let xs = self.board.piece_count(Player::X);
-        let os = self.board.piece_count(Player::O);
+        let xs = next_board.piece_count(Player::X);
+        let os = next_board.piece_count(Player::O);
         if xs + os >= 9 {
             return Ok(Game::Final(FinalGame {
                 state: Tie,
-                board: FinalBoard::from(&self.board),
+                board: next_board,
             }));
         }
 
-        // cloning self is the price we pay for the ironclad type safety we get by returning `Game`.
-        // We can't mutate self in place because the value of `self: &mut ActiveGame` can never
-        // represent a value of type `FinalGame`.
-        Ok(Game::Active(self.clone()))
+        // the game isn't final so it must be active
+        Ok(Game::Active(ActiveGame{board: next_board}))
     }
 }
