@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 use std::fmt;
+use super::error::{SquareOccupied, StringIsNotASquare};
+
 use Square::*;
 
 #[derive(Clone, Copy, Eq, PartialEq, Debug, Hash)]
@@ -33,9 +35,9 @@ impl fmt::Display for Square {
 }
 
 impl TryFrom<String> for Square {
-    type Error = String;
+    type Error = StringIsNotASquare;
 
-    fn try_from(s: String) -> Result<Square, String> {
+    fn try_from(s: String) -> Result<Square, StringIsNotASquare> {
         let pairs = [
             ("1", I1),
             ("2", I2),
@@ -54,7 +56,7 @@ impl TryFrom<String> for Square {
             }
         }
 
-        Err(format!("Squares are numbered 1-9. {} is invalid.", s))
+        Err(StringIsNotASquare{string: s})
     }
 }
 
@@ -115,13 +117,13 @@ pub struct ActiveBoard {
 }
 
 impl ActiveBoard {
-    pub fn place(&mut self, location: Square, player: Player) -> Result<(), String> {
+    pub fn place(&mut self, location: Square, player: Player) -> Result<(), SquareOccupied> {
         match self.m.get(&location) {
             None => {
                 self.m.insert(location, player);
                 Ok(())
             }
-            Some(_) => Err(format!("Location {} is already taken.", location)),
+            Some(_) => Err(SquareOccupied{ sq: location }),
         }
     }
 

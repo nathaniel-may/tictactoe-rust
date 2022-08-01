@@ -1,6 +1,8 @@
 mod board;
+pub mod error;
 
 pub use board::Square;
+pub use error::*;
 use board::{ActiveBoard, FinalBoard, Player, Square::*};
 use std::fmt;
 use State::{Tie, Win};
@@ -79,7 +81,7 @@ impl ActiveGame {
         }
     }
 
-    pub fn take_turn(&mut self, location: Square) -> Result<Game, String> {
+    pub fn take_turn(&mut self, location: Square) -> Result<Game, SquareOccupied> {
         // determine whose turn it is
         let player = self.active_player();
 
