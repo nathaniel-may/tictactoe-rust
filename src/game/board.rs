@@ -1,3 +1,7 @@
+//! # board
+//!
+//! `board` is the module that handles all the game state.
+
 use super::error::{SquareOccupied, StringIsNotASquare};
 use std::collections::HashMap;
 use std::fmt;

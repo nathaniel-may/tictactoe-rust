@@ -1,3 +1,8 @@
+//! # game
+//!
+//! `game` is the module that handles all the game state transitions.
+
+
 // these modules need to be public for lib.rs to re-export the library interface
 pub mod board;
 pub mod error;

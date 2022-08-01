@@ -38,16 +38,16 @@ fn play_game(game: Game) {
         let stdin = io::stdin();
         stdin
             .read_line(&mut buffer)
-            .or_else(|e| Err(StdInFailure { e: e }))?;
+            .map_err(|e| StdInFailure { e: e })?;
         // remove the newline from entering the input
         buffer.pop();
         Ok(buffer)
     }
 
     // attempt to take a turn with the user input
-    fn next(game: &mut ActiveGame) -> Result<Game, TicTacToeUserFacingError> {
+    fn next(game: &ActiveGame) -> Result<Game, TicTacToeUserFacingError> {
         // Inner function makes calls to `?` utilize the correct `From` instances
-        fn _next(game: &mut ActiveGame) -> Result<Game, TicTacToeError> {
+        fn _next(game: &ActiveGame) -> Result<Game, TicTacToeError> {
             let input = get_input()?;
             let sq = Square::try_from(input)?;
             let next = game.take_turn(sq)?;
@@ -63,7 +63,7 @@ fn play_game(game: Game) {
         // the game is over. Exit the program.
         Final(_) => (),
         // the game is still active. Keep playing
-        Active(mut g) => match next(&mut g) {
+        Active(g) => match next(&g) {
             Ok(x) => play_game(x),
             // if there was an error, show it to the user and try the turn again
             Err(e) => {
