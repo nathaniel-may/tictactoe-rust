@@ -89,11 +89,10 @@ pub struct Board {
     m: HashMap<Square, Player>,
 }
 
-// Never add a function with `&mut self` here. The Game type relies on this being immutable.
-// i.e. - A value of type `FinalGame` shouldn't have its board changed even though i's public.
 impl Board {
-    /// places a the player piece on the square. returns an `ActiveBoard` if the board is not
-    /// full, and returns a `FinalBoard` if it is full.
+    /// places a the player piece on the square.
+    /// # Errors
+    /// `SquareOccupied` if the square is occupied.
     pub fn place(&self, location: Square, player: Player) -> Result<Board, SquareOccupied> {
         let mut next_m = self.m.clone();
         match next_m.get(&location) {

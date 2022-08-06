@@ -65,18 +65,22 @@ impl fmt::Display for Game {
 }
 
 /// A `FinalGame` is completed and you cannot take any more turns on it.
-/// Because board has no mutating functions it is safe to expose it here.
+//
+// fields of `FinalGame` must not be public so that the `FinalGame` value
+// cannot be destructively mutated. Instead expose these with getter methods.
 #[derive(Clone, Debug)]
 pub struct FinalGame {
-    pub state: State,
-    pub board: Board,
+    state: State,
+    board: Board,
 }
 
 /// An `ActiveGame` is not completed and you can continue to take more turns on it.
-/// Because board has no mutating functions it is safe to expose it here.
+//
+// fields of `ActiveGame` must not be public so that the `ActiveGame` value
+// cannot be destructively mutated. Instead expose these with getter methods.
 #[derive(Clone, Debug)]
 pub struct ActiveGame {
-    pub board: Board,
+    board: Board,
 }
 
 impl ActiveGame {
